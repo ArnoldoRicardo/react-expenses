@@ -10,14 +10,18 @@ interface RowProps extends ListChildComponentProps {}
 
 const Row: React.FC<RowProps> = ({ index, style }) => {
   const [isSwipedLeft, setIsSwipedLeft] = React.useState(false);
+  const [isSwipedRight, setIsSwipedRight] = React.useState(false);
 
   const handleSwipeLeft = () => {
     console.log(`Card ${index} deslizado a la izquierda: Borrar`);
     setIsSwipedLeft(true);
+    setIsSwipedRight(false);
   };
 
   const handleSwipeRight = () => {
     console.log(`Card ${index} deslizado a la derecha: Editar`);
+    setIsSwipedRight(true);
+    setIsSwipedLeft(false);
   };
 
   const handlers = useSwipeable({
@@ -25,17 +29,28 @@ const Row: React.FC<RowProps> = ({ index, style }) => {
     onSwipedRight: handleSwipeRight,
   });
 
-  const cardStyle = isSwipedLeft
-    ? {
-        border: "2px solid red",
-        transform: "translateX(-10px)",
-      }
-    : {};
+  let cardStyle: CSSProperties = {
+    border: "2px solid transparent",
+    transform: "translateX(0)",
+  };
+
+  if (isSwipedLeft) {
+    cardStyle = {
+      border: "2px solid red",
+      transform: "translateX(-30px)",
+    };
+  } else if (isSwipedRight) {
+    cardStyle = {
+      border: "2px solid green",
+      transform: "translateX(30px)",
+    };
+  }
 
   const combinedStyle = {
     ...cardStyle,
     transition: "transform 0.3s ease, border 0.3s ease",
     ...style,
+    top: 0,
   };
 
   return (
@@ -75,7 +90,7 @@ const InfiniteList: React.FC<InfiniteListProps> = ({ items }) => {
       height={600}
       itemCount={items.length}
       itemSize={100} // Altura ajustada para la Card
-      width="100vw"
+      width="95vw"
     >
       {Row}
     </List>
